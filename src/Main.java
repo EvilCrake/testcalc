@@ -1,6 +1,29 @@
 import java.util.Scanner;
 
 public class Main {
+    private static String arabicToRoman(int num) {
+        if (num < 1 || num > 3999) {
+            throw new IllegalArgumentException("Число должно быть от 1 до 3999");
+        }
+
+        String[] romanNumerals = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+        int[] arabicValues = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+        StringBuilder roman = new StringBuilder();
+
+        int i = arabicValues.length - 1;
+        while (num > 0) {
+            if (num >= arabicValues[i]) {
+                roman.append(romanNumerals[i]);
+                num -= arabicValues[i];
+            } else {
+                i--;
+            }
+        }
+
+        return roman.toString();
+    }
+
     private static int romanToArabic(String roman) {
         if (roman.equals("I")) return 1;
         if (roman.equals("II")) return 2;
@@ -27,8 +50,12 @@ public class Main {
                 break;
             }
 
-            String result = calc(input);
-            System.out.println("Результат: " + result);
+            try {
+                String result = calc(input);
+                System.out.println("Результат: " + result);
+            } catch (Exception e) {
+                System.out.println("Ошибка: " + e.getMessage());
+            }
         }
 
         scanner.close();
@@ -37,7 +64,7 @@ public class Main {
     public static String calc(String input) {
         String[] parts = input.split("\\s+");
         if (parts.length != 3) {
-            return "Ошибка: неверный формат выражения";
+            throw new IllegalArgumentException("Неверный формат выражения");
         }
         try {
             int num1 = 0;
@@ -50,7 +77,7 @@ public class Main {
                 num2 = Integer.parseInt(parts[2]);
             }
             if (num1 < 1 || num1 > 10 || num2 < 1 || num2 > 10) {
-                return "Ошибка: числа должны быть от 1 до 10";
+                throw new IllegalArgumentException("Числа должны быть от 1 до 10");
             }
             String operator = parts[1];
             int result = 0;
@@ -59,14 +86,18 @@ public class Main {
                 case "-": result = num1 - num2; break;
                 case "*": result = num1 * num2; break;
                 case "/": result = num1 / num2; break;
-                default: return "Ошибка: неверный оператор";
+                default: throw new IllegalArgumentException("Неверный оператор");
             }
-            if (result < 1 || result > 999999) {
-                return "Ошибка: числа должны быть от 1 до 10";
+            if (result < 1 || result > 3999) {
+                throw new IllegalArgumentException("Результат должен быть от 1 до 3999");
             }
-            return Integer.toString(result);
+            if (parts[0].matches("[IIIIIIIVVVIVIIVIIIIXX]+") && parts[2].matches("[IIIIIIIVVVIVIIVIIIIXX]+")) {
+                return arabicToRoman(result);
+            } else {
+                return Integer.toString(result);
+            }
         } catch (NumberFormatException e) {
-            return "Ошибка: неверный формат чисел";
+            throw new IllegalArgumentException("Неверный формат чисел");
         }
     }
 }
